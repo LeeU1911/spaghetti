@@ -1,0 +1,90 @@
+<!doctype>
+<html>
+<head>
+<style type="text/css">
+	#textCanvas {
+		width: 300px;
+		height: 200px;
+	}
+</style>
+<script>
+	var canvas, context, numOfStep, step, delay, cursorDelay, displayText = "", textIndex, textWidth;
+	var text = "Welcome, guest!";
+	var textArr = text.split("");
+	var toggle = true;
+	var newlineDelay = 1000;
+	function init(){
+		canvas = document.getElementById("textCanvas");
+		context = canvas.getContext("2d");
+		context.font = "20px Arial";
+		context.textAlign = "left";
+		context.textBaseline = "middle";
+		
+		textIndex = 0;
+		textWidth = 20;
+		numOfStep = 150;
+		step = 0;
+		delay = 130;
+		cursorDelay = 200;
+		setTimeout('moveCursorNDrawText()', newlineDelay);
+		drawCursor();
+	}
+	
+	function moveCursorNDrawText(){
+		if(textIndex < textArr.length){
+			displayText += textArr[textIndex];
+			step += calculateTextWidth();
+			textIndex++;
+		}	
+		redrawCanvasWithText();
+		if(step == numOfStep){
+			step = 0;
+		}
+			
+		if(step < numOfStep){
+			var t = setTimeout('moveCursorNDrawText()', delay);
+		}
+	}
+	
+	function drawCursor(){
+		redrawCanvasWithText();
+		if(toggle){
+			drawCursorVisible();
+		}
+		toggle = !toggle;
+		var c = setTimeout('drawCursor()', 250);
+	}
+	
+	function redrawCanvasWithText(){
+		context.clearRect(0, 0, canvas.width, canvas.height);
+		context.save();
+		context.fillStyle = "blue";
+		context.translate(0, canvas.height / 2);
+		context.fillText(displayText, 0, 0);
+		context.restore();
+	}
+	
+	function drawCursorVisible(){
+		context.beginPath();
+		var y = canvas.height / 2 - 15;
+		context.moveTo(step, y);
+		context.lineTo(step, y + 25);
+		context.stroke();
+	}
+
+	function calculateTextWidth(){
+		var character = textArr[textIndex];
+		var characterWidth = context.measureText(character).width;
+		return characterWidth;
+	}
+</script>
+
+</head>
+<body onload="init();">
+	<div class="canvas">
+		<canvas id="textCanvas">
+		This browser doesn't support canvas object.
+		</canvas>
+	</div>
+</body>
+</html>
